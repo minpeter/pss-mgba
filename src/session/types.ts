@@ -98,19 +98,19 @@ export function createSessionState(miniState: MiniState, events: readonly Sessio
 }
 
 export function createModeMismatchEvent(input: {
-  readonly miniState: MiniState;
+  readonly sessionState: Pick<SessionState, "mode" | "miniState">;
   readonly evidenceMode: GameMode;
   readonly evidenceSource: string;
 }): SessionEvent {
-  const { evidenceMode, evidenceSource, miniState } = input;
+  const { evidenceMode, evidenceSource, sessionState } = input;
   return {
     kind: "mode-mismatch",
     phase: "syncing",
-    mode: miniState.mode,
+    mode: sessionState.mode,
     message: `Mode evidence from ${evidenceSource} disagreed with SessionState mode`,
-    miniState,
+    miniState: sessionState.miniState,
     metadata: {
-      authoritativeMode: miniState.mode,
+      authoritativeMode: sessionState.mode,
       evidenceMode,
       evidenceSource,
     },
