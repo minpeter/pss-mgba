@@ -7,7 +7,8 @@ Reads Pokemon Red/Blue game state from RAM through mGBA-http. No memory writes.
 | File | Purpose |
 |------|---------|
 | `memoryMap.ts` | WRAM address constants for Red/Blue (wCurMap, wIsInBattle, wPartyCount, etc.) |
-| `GameWorld.ts` | Reads mode flags, classifies game mode (overworld/battle/dialog/naming/title) |
+| `GameWorld.ts` | Reads world state and delegates mode classification to `mode-classification.ts` |
+| `mode-classification.ts` | Shared game mode classifier (overworld/battle/dialog/naming/title) |
 | `PokemonStateReader.ts` | Reads full game state: party, bag, battle, player, flags |
 | `MapMemory.ts` | Persistent per-map tile grid built from screen tilemap reads |
 | `MapMemoryStore.ts` | JSON persistence for MapMemory across sessions |
@@ -34,7 +35,7 @@ The core exploration data structure. Each `update()` call reads the 20x18 screen
 
 ## Mode Classification
 
-`classifyMode()` in GameWorld.ts checks RAM flags in order:
+`classifyGameMode()` in `mode-classification.ts` checks RAM flags in order:
 1. All-zero state → `title`
 2. `wIsInBattle != 0` → `battle`
 3. Naming screen markers in tilemap → `naming`
