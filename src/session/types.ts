@@ -1,12 +1,7 @@
+import type { GameMode as SharedGameMode } from "../game/mode-classification.js";
 import type { MgbaButton } from "../mgba/MgbaTypes.js";
 
-export type GameMode =
-  | "title"
-  | "overworld"
-  | "dialog"
-  | "battle"
-  | "naming"
-  | "menu";
+export type GameMode = SharedGameMode;
 
 export type ReadinessLockReason =
   | "joy-ignore"

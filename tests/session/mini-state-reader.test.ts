@@ -1,12 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { RED_BLUE_MEMORY_MAP } from "../../src/game/memoryMap.js";
 import {
+  RWY_ADDRESS,
+  WINDOW_HIDDEN_Y,
+} from "../../src/game/mode-classification.js";
+import {
   classifyMiniStateMode,
   createMiniState,
   type MiniStateFlags,
   MiniStateReader,
-  RWY_ADDRESS,
-  WINDOW_HIDDEN_Y,
 } from "../../src/session/mini-state-reader.js";
 
 const map = RED_BLUE_MEMORY_MAP;

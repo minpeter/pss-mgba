@@ -1,20 +1,19 @@
 import { RED_BLUE_MEMORY_MAP } from "../game/memoryMap.js";
+import {
+  classifyGameMode,
+  isDialogActive,
+  type ModeClassificationFlags,
+  RWY_ADDRESS,
+} from "../game/mode-classification.js";
 import { type RamClient, readRangeExact } from "../game/RamClient.js";
 import { decodeGen1Text } from "../game/TextCodec.js";
+
 import type {
   GameMode,
   MiniState,
   ReadinessLockReason,
   ReadinessState,
 } from "./types.js";
-
-export const RWY_ADDRESS = 0xff_4a;
-export const WINDOW_HIDDEN_Y = 144;
-export const NAMING_SCREEN_MARKERS = [
-  "lower case",
-  "UPPER CASE",
-  "ED Mr.",
-] as const;
 
 const map = RED_BLUE_MEMORY_MAP;
 
@@ -109,23 +108,7 @@ export function createMiniState(flags: MiniStateFlags): MiniState {
 }
 
 export function classifyMiniStateMode(flags: MiniStateFlags): GameMode {
-  if (isAllZeroState(flags)) {
-    return "title";
-  }
-
-  if (flags.battle !== 0) {
-    return "battle";
-  }
-
-  if (isNamingScreen(flags)) {
-    return "naming";
-  }
-
-  if (isDialogActive(flags)) {
-    return "dialog";
-  }
-
-  return "overworld";
+  return classifyGameMode(toModeClassificationFlags(flags));
 }
 
 function createReadinessState(flags: MiniStateFlags): ReadinessState {
@@ -149,28 +132,20 @@ function createReadinessState(flags: MiniStateFlags): ReadinessState {
   };
 }
 
-function isDialogActive(flags: MiniStateFlags): boolean {
-  return flags.windowY < WINDOW_HIDDEN_Y;
-}
-
-function isNamingScreen(flags: MiniStateFlags): boolean {
-  if (flags.namingScreenType === 0) {
-    return false;
-  }
-  return NAMING_SCREEN_MARKERS.some((marker) =>
-    flags.screenText.includes(marker)
-  );
-}
-
-function isAllZeroState(flags: MiniStateFlags): boolean {
-  return (
-    flags.mapId === 0 &&
-    flags.y === 0 &&
-    flags.x === 0 &&
-    flags.partyCount === 0 &&
-    flags.battle === 0 &&
-    flags.textBoxId === 0 &&
-    flags.joyIgnore === 0 &&
-    flags.walkCounter === 0
-  );
+function toModeClassificationFlags(
+  flags: MiniStateFlags
+): ModeClassificationFlags {
+  return {
+    battle: flags.battle,
+    curMap: flags.mapId,
+    joyIgnore: flags.joyIgnore,
+    namingScreenType: flags.namingScreenType,
+    partyCount: flags.partyCount,
+    screenText: flags.screenText,
+    textBoxId: flags.textBoxId,
+    walkCounter: flags.walkCounter,
+    windowY: flags.windowY,
+    xCoord: flags.x,
+    yCoord: flags.y,
+  };
 }
