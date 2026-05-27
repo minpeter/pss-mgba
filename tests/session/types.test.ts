@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createMiniState } from "../../src/session/MiniStateReader.js";
-import { createModeMismatchEvent, createSessionState } from "../../src/session/types.js";
+import { createMiniState } from "../../src/session/mini-state-reader.js";
+import {
+  createModeMismatchEvent,
+  createSessionState,
+} from "../../src/session/types.js";
 
 function miniState(modeEvidence: "overworld" | "battle" = "overworld") {
   return createMiniState({
@@ -27,7 +30,7 @@ describe("session type helpers", () => {
 
     expect(sessionState.mode).toBe("overworld");
     expect(sessionState.miniState).toBe(mini);
-    expect(sessionState.phase).toBe("ready");
+    expect(sessionState.phase).toBe("synced");
   });
 
   it("records raw mode disagreement as a diagnostic event without changing authority", () => {

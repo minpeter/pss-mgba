@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createMiniState } from "../../src/session/MiniStateReader.js";
-import { detectStateTransition } from "../../src/session/TransitionDetector.js";
+import { createMiniState } from "../../src/session/mini-state-reader.js";
+import { detectStateTransition } from "../../src/session/transition-detector.js";
 import type { MiniState } from "../../src/session/types.js";
 
 function mini(overrides: Partial<MiniState> = {}): MiniState {

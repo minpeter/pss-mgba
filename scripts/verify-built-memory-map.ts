@@ -7,8 +7,7 @@ const repoRoot = process.cwd();
 process.chdir(tmpdir());
 
 const memoryMapModule = (await import(
-  pathToFileURL(path.join(repoRoot, "dist", "src", "game", "memoryMap.js"))
-    .href
+  pathToFileURL(path.join(repoRoot, "dist", "src", "game", "memoryMap.js")).href
 )) as Record<string, unknown>;
 
 function assertEqual(name: string, actual: unknown, expected: unknown): void {
@@ -29,7 +28,9 @@ assertEqual("wCurMap", memoryMapModule.wCurMap, 0xd3_5e);
 assertEqual("RED_BLUE_MEMORY_MAP.wCurMap", redBlueMemoryMap.wCurMap, 0xd3_5e);
 assertEqual("HALL_OF_FAME_MAP_ID", memoryMapModule.HALL_OF_FAME_MAP_ID, 0x76);
 
-const promptAsset = await stat(path.join(repoRoot, "dist", "src", "ai", "prompts", "overworld.md"));
+const promptAsset = await stat(
+  path.join(repoRoot, "dist", "src", "ai", "prompts", "overworld.md")
+);
 if (!promptAsset.isFile()) {
   throw new Error("Built prompt markdown asset is missing");
 }

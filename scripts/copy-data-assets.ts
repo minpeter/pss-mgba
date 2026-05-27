@@ -19,7 +19,10 @@ for (const pair of assetPairs) {
   const entries = await readdir(pair.from, { withFileTypes: true });
   await Promise.all(
     entries
-      .filter((entry) => entry.isFile() && pair.extensions.has(path.extname(entry.name)))
+      .filter(
+        (entry) =>
+          entry.isFile() && pair.extensions.has(path.extname(entry.name))
+      )
       .map((entry) =>
         copyFile(
           path.join(pair.from, entry.name),

@@ -1,27 +1,36 @@
-import { decodeGen1Text } from "../game/TextCodec.js";
 import { RED_BLUE_MEMORY_MAP } from "../game/memoryMap.js";
-import type { RamClient } from "../game/RamClient.js";
-import type { GameMode, MiniState, ReadinessLockReason, ReadinessState } from "./types.js";
+import { type RamClient, readRangeExact } from "../game/RamClient.js";
+import { decodeGen1Text } from "../game/TextCodec.js";
+import type {
+  GameMode,
+  MiniState,
+  ReadinessLockReason,
+  ReadinessState,
+} from "./types.js";
 
 export const RWY_ADDRESS = 0xff_4a;
 export const WINDOW_HIDDEN_Y = 144;
-export const NAMING_SCREEN_MARKERS = ["lower case", "UPPER CASE", "ED Mr."] as const;
+export const NAMING_SCREEN_MARKERS = [
+  "lower case",
+  "UPPER CASE",
+  "ED Mr.",
+] as const;
 
 const map = RED_BLUE_MEMORY_MAP;
 
 export interface MiniStateFlags {
   readonly battle: number;
-  readonly textBoxId: number;
+  readonly joyIgnore: number;
   readonly letterDelay: number;
   readonly mapId: number;
-  readonly y: number;
-  readonly x: number;
-  readonly partyCount: number;
-  readonly walkCounter: number;
-  readonly joyIgnore: number;
   readonly namingScreenType: number;
-  readonly windowY: number;
+  readonly partyCount: number;
   readonly screenText: string;
+  readonly textBoxId: number;
+  readonly walkCounter: number;
+  readonly windowY: number;
+  readonly x: number;
+  readonly y: number;
 }
 
 export class MiniStateReader {
@@ -32,18 +41,35 @@ export class MiniStateReader {
   }
 
   async read(): Promise<MiniState> {
-    const [battle, textBoxId, letterDelay, mapId, coords, partyCount, walkCounter, joyIgnore, namingScreenType, windowY, tileMap] = await Promise.all([
+    const [
+      battle,
+      textBoxId,
+      letterDelay,
+      mapId,
+      coords,
+      partyCount,
+      walkCounter,
+      joyIgnore,
+      namingScreenType,
+      windowY,
+      tileMap,
+    ] = await Promise.all([
       this.client.read8(map.wIsInBattle),
       this.client.read8(map.wTextBoxID),
       this.client.read8(map.wLetterPrintingDelayFlags),
       this.client.read8(map.wCurMap),
-      this.client.readRange(map.wYCoord, 2),
+      readRangeExact(this.client, map.wYCoord, 2, "miniState.coords"),
       this.client.read8(map.wPartyCount),
       this.client.read8(map.wWalkCounter),
       this.client.read8(map.wJoyIgnore),
       this.client.read8(map.wNamingScreenType),
       this.client.read8(RWY_ADDRESS),
-      this.client.readRange(map.wTileMap, map.wTileMapLength),
+      readRangeExact(
+        this.client,
+        map.wTileMap,
+        map.wTileMapLength,
+        "miniState.tileMap"
+      ),
     ]);
 
     return createMiniState({
@@ -51,8 +77,8 @@ export class MiniStateReader {
       textBoxId,
       letterDelay,
       mapId,
-      y: coords[0] ?? 0,
-      x: coords[1] ?? 0,
+      y: coords[0],
+      x: coords[1],
       partyCount,
       walkCounter,
       joyIgnore,
@@ -115,7 +141,7 @@ function createReadinessState(flags: MiniStateFlags): ReadinessState {
   }
 
   return {
-    ready: lockReasons.length === 0,
+    overworldReady: lockReasons.length === 0,
     joyIgnore: flags.joyIgnore,
     walkCounter: flags.walkCounter,
     windowY: flags.windowY,
@@ -131,7 +157,9 @@ function isNamingScreen(flags: MiniStateFlags): boolean {
   if (flags.namingScreenType === 0) {
     return false;
   }
-  return NAMING_SCREEN_MARKERS.some((marker) => flags.screenText.includes(marker));
+  return NAMING_SCREEN_MARKERS.some((marker) =>
+    flags.screenText.includes(marker)
+  );
 }
 
 function isAllZeroState(flags: MiniStateFlags): boolean {

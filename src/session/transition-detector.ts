@@ -40,6 +40,9 @@ export class TransitionDetector {
   }
 }
 
-export function detectStateTransition(before: MiniState, after: MiniState): StateTransition {
+export function detectStateTransition(
+  before: MiniState,
+  after: MiniState
+): StateTransition {
   return new TransitionDetector().detect(before, after);
 }
