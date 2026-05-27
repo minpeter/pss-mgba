@@ -3,8 +3,8 @@ import path from "node:path";
 
 const assetPairs = [
   {
-    from: path.join("src", "pokemon", "data"),
-    to: path.join("dist", "src", "pokemon", "data"),
+    from: path.join("src", "game", "data"),
+    to: path.join("dist", "src", "game", "data"),
     extensions: new Set([".json"]),
   },
   {
