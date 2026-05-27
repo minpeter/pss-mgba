@@ -7,7 +7,7 @@ const repoRoot = process.cwd();
 process.chdir(tmpdir());
 
 const memoryMapModule = (await import(
-  pathToFileURL(path.join(repoRoot, "dist", "src", "pokemon", "memoryMap.js"))
+  pathToFileURL(path.join(repoRoot, "dist", "src", "game", "memoryMap.js"))
     .href
 )) as Record<string, unknown>;
 
